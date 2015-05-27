@@ -1,0 +1,23 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP +3.3VA
+K POWER, PWR
+$ENDCMP
+#
+$CMP D_Bridge
+D Diode
+$ENDCMP
+#
+$CMP OPA2134
+D Dual Op amp (low power)
+K ampliop
+F analog-dev/op275.pdf
+$ENDCMP
+#
+$CMP TPA6120A2
+D Dual Op amp (low power)
+K ampliop
+F analog-dev/op275.pdf
+$ENDCMP
+#
+#End Doc Library

@@ -1,0 +1,220 @@
+Cmp-Mod V01 Created by Cvpcb (2015-05-09 BZR 5648)-product   date = Сб 16 май 2015 11:11:47
+
+BeginCmp
+TimeStamp = /55521779;
+Reference = C26;
+ValeurCmp = 1000µF;
+IdModule  = Capacitors_ThroughHole:C_Radial_D13_L21_P5;
+EndCmp
+
+BeginCmp
+TimeStamp = /5554EE4A;
+Reference = C27;
+ValeurCmp = 0.1µF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5552300C;
+Reference = C28;
+ValeurCmp = 10µF;
+IdModule  = Capacitors_Tantalum_SMD:TantalC_SizeB_EIA-3528_Reflow;
+EndCmp
+
+BeginCmp
+TimeStamp = /5554DAF9;
+Reference = C29;
+ValeurCmp = 0.1µF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55523C02;
+Reference = C30;
+ValeurCmp = 10µF;
+IdModule  = Capacitors_Tantalum_SMD:TantalC_SizeB_EIA-3528_Reflow;
+EndCmp
+
+BeginCmp
+TimeStamp = /5554F853;
+Reference = C31;
+ValeurCmp = 1000µF;
+IdModule  = Capacitors_ThroughHole:C_Radial_D13_L21_P5;
+EndCmp
+
+BeginCmp
+TimeStamp = /5554F0DE;
+Reference = C32;
+ValeurCmp = 0.1µF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55523070;
+Reference = C33;
+ValeurCmp = 10µF;
+IdModule  = Capacitors_Tantalum_SMD:TantalC_SizeB_EIA-3528_Reflow;
+EndCmp
+
+BeginCmp
+TimeStamp = /5554EA15;
+Reference = C34;
+ValeurCmp = 0.1µF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55523C80;
+Reference = C35;
+ValeurCmp = 10µF;
+IdModule  = Capacitors_Tantalum_SMD:TantalC_SizeB_EIA-3528_Reflow;
+EndCmp
+
+BeginCmp
+TimeStamp = /5552704A;
+Reference = C36;
+ValeurCmp = 0.1µF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5552667F;
+Reference = C37;
+ValeurCmp = ~1nF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55527CCA;
+Reference = C38;
+ValeurCmp = 47µF;
+IdModule  = Capacitors_Tantalum_SMD:TantalC_SizeC_EIA-6032_Reflow;
+EndCmp
+
+BeginCmp
+TimeStamp = /5552A125;
+Reference = C39;
+ValeurCmp = 47µF;
+IdModule  = Capacitors_Tantalum_SMD:TantalC_SizeC_EIA-6032_Reflow;
+EndCmp
+
+BeginCmp
+TimeStamp = /55526EAA;
+Reference = C40;
+ValeurCmp = 4.7µF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5552627E;
+Reference = C41;
+ValeurCmp = 10nF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /555266FD;
+Reference = C42;
+ValeurCmp = ~47pF;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /555589F7;
+Reference = D1;
+ValeurCmp = D_Bridge;
+IdModule  = dac:DB10xS;
+EndCmp
+
+BeginCmp
+TimeStamp = /555275D7;
+Reference = D2;
+ValeurCmp = SS14;
+IdModule  = Diodes_SMD:Diode-SMA_Standard;
+EndCmp
+
+BeginCmp
+TimeStamp = /555271E7;
+Reference = L1;
+ValeurCmp = 47µH;
+IdModule  = dac:CD43;
+EndCmp
+
+BeginCmp
+TimeStamp = /5555DD3C;
+Reference = P8;
+ValeurCmp = ANALOG_POWER;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x05;
+EndCmp
+
+BeginCmp
+TimeStamp = /5554AFD5;
+Reference = P9;
+ValeurCmp = TRANSFORMER;
+IdModule  = dac:TTP-15;
+EndCmp
+
+BeginCmp
+TimeStamp = /5555DD66;
+Reference = P10;
+ValeurCmp = DIGITAL_POWER;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
+EndCmp
+
+BeginCmp
+TimeStamp = /55528D9C;
+Reference = R10;
+ValeurCmp = 7.5k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55528E34;
+Reference = R11;
+ValeurCmp = 2.4k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /555263EB;
+Reference = R12;
+ValeurCmp = 33k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55559153;
+Reference = U5;
+ValeurCmp = 7812;
+IdModule  = SMD_Packages:DPAK-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /555595A1;
+Reference = U6;
+ValeurCmp = 7805;
+IdModule  = SMD_Packages:DPAK-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /555585E1;
+Reference = U7;
+ValeurCmp = 7912;
+IdModule  = SMD_Packages:DPAK-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /55558F70;
+Reference = U8;
+ValeurCmp = 7905;
+IdModule  = SMD_Packages:DPAK-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /55525D5F;
+Reference = U9;
+ValeurCmp = TPS54331;
+IdModule  = Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm;
+EndCmp
+
+EndListe
