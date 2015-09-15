@@ -337,5 +337,6 @@
 #define STM32_USB_OTG_THREAD_PRIO           LOWPRIO
 #define STM32_USB_OTG_THREAD_STACK_SIZE     128
 #define STM32_USB_OTGFIFO_FILL_BASEPRI      0
+#define STM32_USE_USB_OTG2_HS               FALSE
 
 #endif /* _MCUCONF_H_ */
