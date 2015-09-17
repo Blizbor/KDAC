@@ -4,6 +4,8 @@
 #include "shell.h"
 #include "chprintf.h"
 
+#include "gfx.h"
+
 #include <string.h>
 
 #define MCK_FB_INTEG    256
@@ -62,6 +64,13 @@ static const ShellConfig shell_cfg1 =
 {
     (BaseSequentialStream *)&SDU1,
     commands
+};
+
+static const I2CConfig i2cfg =
+{
+    OPMODE_I2C,
+    400000,
+    FAST_DUTY_CYCLE_2,
 };
 
 OSAL_IRQ_HANDLER(STM32_TIM11_HANDLER)
@@ -143,13 +152,29 @@ int main(void)
     sduObjectInit(&SDU1);
     sduStart(&SDU1, &serusbcfg);
 
+    i2cStart(&I2CD1, &i2cfg);
+
     usbDisconnectBus(serusbcfg.usbp);
     chThdSleepMilliseconds(1500);
     usbStart(serusbcfg.usbp, &usbcfg);
     usbConnectBus(serusbcfg.usbp);
 
+    gfxInit();
+
+    font_t font = gdispOpenFont("terminus_12");
+
     for (;;)
     {
+        gdispClear(Black);
+        gdispDrawBox(1, 1, 126, 14, White);
+        gdispDrawString(2, 1, "Lorem Ipsum 195\n", font, White);
+        gdispFillArea(1, 17, 126, 14, White);
+        gdispDrawString(2, 17, "49.152 MHz", font, Black);
+        gdispDrawString(2, 33, "0xdeadbeef", font, White);
+        gdispDrawString(2, 49, "So what now?", font, White);
+
+        gdispFlush();
+
         if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE))
             shelltp = shellCreate(&shell_cfg1, THD_WORKING_AREA_SIZE(1024), NORMALPRIO);
         else if (chThdTerminatedX(shelltp))
