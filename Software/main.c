@@ -6,6 +6,10 @@
 
 #include "gfx.h"
 
+#include "gui/menu.h"
+#include "gui/label.h"
+#include "gui/manager.h"
+
 #include <string.h>
 
 #define MCK_FB_INTEG    256
@@ -139,6 +143,41 @@ void stopSOFCapture()
     chSysUnlock();
 }
 
+
+
+static struct Menu mainMenu;
+static struct Manager guiManager;
+static struct Label testLabel;
+static font_t mainFont;
+static font_t numberFont;
+
+const struct MenuItem mainMenuItems[10] = {
+    {"MCK Frequency", (struct Widget*)&testLabel}, {"Item 2", NULL}, {"Item 3", NULL}, {"Item 4", NULL}, {"Item 5", NULL},
+    {"Item 6", NULL}, {"Item 7", NULL}, {"Item 8", NULL}, {"Item 9", NULL}, {"Item 10", NULL}
+};
+
+static THD_WORKING_AREA(waGui, 128);
+static THD_FUNCTION(guiThread, arg)
+{
+    rccResetTIM4();
+
+    managerInit(&guiManager, TIM4);
+    managerStart(&guiManager);
+
+    menuInit(&mainMenu, mainMenuItems, 10, mainFont);
+    labelInit(&testLabel, numberFont);
+    labelSetPosition(&testLabel, 10, 10);
+    labelSetText(&testLabel, "49.123");
+
+    managerPushWidget(&guiManager, (struct Widget*)&mainMenu);
+
+    for(;;)
+    {
+        managerUpdate(&guiManager, 100);
+        chThdSleepMilliseconds(100);
+    }
+}
+
 int main(void)
 {
     halInit();
@@ -146,6 +185,7 @@ int main(void)
 
     rccEnableTIM1(FALSE);
     rccEnableTIM2(FALSE);
+    rccEnableTIM4(FALSE);
 
     thread_t *shelltp = NULL;
 
@@ -160,28 +200,20 @@ int main(void)
     usbConnectBus(serusbcfg.usbp);
 
     gfxInit();
+    mainFont = gdispOpenFont("terminus_12");
+    numberFont = gdispOpenFont("LargeNumbers");
 
-    font_t font = gdispOpenFont("terminus_12");
+    chThdCreateStatic(waGui, sizeof(waGui), NORMALPRIO, guiThread, NULL);
 
     for (;;)
     {
-        gdispClear(Black);
-        gdispDrawBox(1, 1, 126, 14, White);
-        gdispDrawString(2, 1, "Lorem Ipsum 195\n", font, White);
-        gdispFillArea(1, 17, 126, 14, White);
-        gdispDrawString(2, 17, "49.152 MHz", font, Black);
-        gdispDrawString(2, 33, "0xdeadbeef", font, White);
-        gdispDrawString(2, 49, "So what now?", font, White);
-
-        gdispFlush();
-
-        if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE))
+        /*if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE))
             shelltp = shellCreate(&shell_cfg1, THD_WORKING_AREA_SIZE(1024), NORMALPRIO);
         else if (chThdTerminatedX(shelltp))
         {
             chThdRelease(shelltp);
             shelltp = NULL;
-        }
+        }*/
         chThdSleepMilliseconds(1000);
     }
 }

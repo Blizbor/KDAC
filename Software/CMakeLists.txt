@@ -3,7 +3,7 @@ PROJECT(kdac)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 ENABLE_LANGUAGE(ASM)
 
-FIND_PACKAGE(ChibiOS COMPONENTS rt hal pal usb gpt i2c i2s serial serial_usb spi mmc_spi shell chprintf REQUIRED)
+FIND_PACKAGE(ChibiOS COMPONENTS rt hal pal usb gpt i2c i2s serial serial_usb spi mmc_spi shell chprintf memstreams REQUIRED)
 FIND_PACKAGE(uGFX COMPONENTS gos_chibios gdisp gdisp_fonts driver_SSD1306 REQUIRED)
 
 INCLUDE_DIRECTORIES(
@@ -16,6 +16,11 @@ SET(PROJECT_SOURCES
     main.c
     board.c
     usbcfg.c
+    
+    gui/manager.c
+    gui/widget.c
+    gui/menu.c
+    gui/label.c
 )
 
 ADD_DEFINITIONS(-DCORTEX_USE_FPU=TRUE)
