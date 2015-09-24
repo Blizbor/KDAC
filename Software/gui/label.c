@@ -51,3 +51,12 @@ void labelSetPosition(struct Label *self, uint8_t x, uint8_t y)
     self->needRedraw = true;
 }
 
+const char *labelText(const struct Label *self)
+{
+    return self->text;
+}
+
+font_t labelFont(const struct Label *self)
+{
+    return self->font;
+}

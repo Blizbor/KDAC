@@ -14,6 +14,7 @@ struct Manager
     TIM_TypeDef *tim;
     int16_t lastTimCounter;
     char wasPressed;
+    bool pushPopped;
 };
 
 void managerInit(struct Manager* m, TIM_TypeDef *tim);

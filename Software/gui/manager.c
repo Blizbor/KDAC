@@ -8,6 +8,7 @@ void managerInit(struct Manager* m, TIM_TypeDef *tim)
     m->top = 0;
     m->tim = tim;
     m->wasPressed = 0;
+    m->pushPopped = false;
 }
 
 void managerStart(struct Manager* m)
@@ -32,6 +33,8 @@ void managerPushWidget(struct Manager* m, struct Widget *w)
 
     m->stack[m->top] = w;
     m->top++;
+
+    m->pushPopped = true;
 }
 
 void managerPopWidget(struct Manager* m)
@@ -40,6 +43,8 @@ void managerPopWidget(struct Manager* m)
         return;
 
     m->top--;
+
+    m->pushPopped = true;
 }
 
 void managerUpdate(struct Manager* m, int dt)
@@ -71,11 +76,14 @@ void managerUpdate(struct Manager* m, int dt)
             current->vmt->action(current, m, a);
     }
 
+    if (m->top > 0)
+        current = m->stack[m->top - 1];
+
     if (current && (current->vmt->update))
         current->vmt->update(current, m, dt);
 
-    if (current && (current->vmt->draw) && (current->vmt->needRedraw) &&
-            (current->vmt->needRedraw(current)))
+    if (current && (current->vmt->draw) && (m->pushPopped || ((current->vmt->needRedraw) &&
+                                            (current->vmt->needRedraw(current)))))
     {
         gdispClear(Black);
         current->vmt->draw(current, m);
@@ -83,4 +91,5 @@ void managerUpdate(struct Manager* m, int dt)
     }
 
     m->wasPressed = pressed;
+    m->pushPopped = false;
 }

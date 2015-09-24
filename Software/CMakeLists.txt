@@ -17,10 +17,14 @@ SET(PROJECT_SOURCES
     board.c
     usbcfg.c
     
+    system.c
+
     gui/manager.c
     gui/widget.c
     gui/menu.c
     gui/label.c
+    gui/spinbox.c
+    gui/gui.c
 )
 
 ADD_DEFINITIONS(-DCORTEX_USE_FPU=TRUE)
