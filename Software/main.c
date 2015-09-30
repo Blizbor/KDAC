@@ -3,6 +3,7 @@
 
 #include "gui/gui.h"
 #include "system.h"
+#include "cs8416.h"
 
 SerialUSBDriver SDU1;
 
@@ -12,6 +13,15 @@ static const I2CConfig i2cfg =
     400000,
     FAST_DUTY_CYCLE_2,
 };
+
+static const CS8416Config spdifcfg =
+{
+    &I2CD1,
+    CS8416_I2C_ADDRESS(0x4),
+    100
+};
+
+static CS8416Driver spdif;
 
 int main(void)
 {
@@ -28,7 +38,15 @@ int main(void)
     usbStart(serusbcfg.usbp, &usbcfg);
     usbConnectBus(serusbcfg.usbp);
 
-    palSetPad(GPIOC, GPIOC_MCK_EN);
+    cs8416Init(&spdif);
+    cs8416Start(&spdif, &spdifcfg);
+
+    cs8416PowerUp(&spdif);
+    cs8416SelectInput(&spdif, 1);
+
+    cs8416UpdateReg(&spdif, CS8416_REG_CONTROL1, CS8416_CONTROL1_RMCKF, CS8416_CONTROL1_RMCKF);
+
+    //palSetPad(GPIOC, GPIOC_MCK_EN);
 
     startGUI();
 
@@ -48,4 +66,5 @@ int main(void)
         }
         chThdSleepMilliseconds(1000);
     }
+    for (;;);
 }

@@ -19,6 +19,8 @@ SET(PROJECT_SOURCES
     
     system.c
 
+    cs8416.c
+
     gui/manager.c
     gui/widget.c
     gui/menu.c
