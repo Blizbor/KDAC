@@ -47,12 +47,23 @@ msg_t cs8416UpdateReg(CS8416Driver *csp, uint8_t address, uint8_t mask, uint8_t 
 
 msg_t cs8416PowerUp(CS8416Driver *csp)
 {
-    return cs8416UpdateReg(csp, CS8416_REG_CONTROL4, CS8416_CONTROL4_RUN, CS8416_CONTROL4_RUN);
+    msg_t res = cs8416UpdateReg(csp, CS8416_REG_CONTROL4, CS8416_CONTROL4_RUN, CS8416_CONTROL4_RUN);
+    if(res)
+        return res;
+    res = cs8416ToggleMCK(csp, false);
+    if(res)
+        return res;
+    res = cs8416WriteReg(csp, CS8416_REG_AUDIO_FORMAT, csp->cfg->audiofmt);
+    return res;
 }
 
 msg_t cs8416PowerDown(CS8416Driver *csp)
 {
-    return cs8416UpdateReg(csp, CS8416_REG_CONTROL4, CS8416_CONTROL4_RUN, 0);
+    msg_t res = cs8416ToggleMCK(csp, false);
+    if(res)
+        return res;
+    res = cs8416UpdateReg(csp, CS8416_REG_CONTROL4, CS8416_CONTROL4_RUN, 0);
+    return res;
 }
 
 msg_t cs8416SelectInput(CS8416Driver *csp, uint8_t input)
@@ -61,4 +72,9 @@ msg_t cs8416SelectInput(CS8416Driver *csp, uint8_t input)
         return -1;
 
     return cs8416UpdateReg(csp, CS8416_REG_CONTROL4, CS8416_CONTROL4_RXSEL(0xFF), CS8416_CONTROL4_RXSEL(input));
+}
+
+msg_t cs8416ToggleMCK(CS8416Driver *csp, bool enabled)
+{
+    return cs8416UpdateReg(csp, CS8416_REG_CONTROL4, CS8416_CONTROL4_RXD, enabled ? 0 : CS8416_CONTROL4_RXD);
 }

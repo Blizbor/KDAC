@@ -3,9 +3,8 @@
 
 #include "gui/gui.h"
 #include "system.h"
-#include "cs8416.h"
 
-SerialUSBDriver SDU1;
+#include "drivers.h"
 
 static const I2CConfig i2cfg =
 {
@@ -18,10 +17,10 @@ static const CS8416Config spdifcfg =
 {
     &I2CD1,
     CS8416_I2C_ADDRESS(0x4),
-    100
+    100,
+    // Master mode, 24 bit I2S, 64 x Fs
+    CS8416_AFMT_SOMS | CS8416_AFMT_SODEL
 };
-
-static CS8416Driver spdif;
 
 int main(void)
 {
@@ -42,11 +41,8 @@ int main(void)
     cs8416Start(&spdif, &spdifcfg);
 
     cs8416PowerUp(&spdif);
-    cs8416SelectInput(&spdif, 1);
 
-    cs8416UpdateReg(&spdif, CS8416_REG_CONTROL1, CS8416_CONTROL1_RMCKF, CS8416_CONTROL1_RMCKF);
-
-    //palSetPad(GPIOC, GPIOC_MCK_EN);
+    switchAudioSource(AUDIO_SOURCE_OPTICAL);
 
     startGUI();
 

@@ -1,5 +1,6 @@
 #include "system.h"
 #include "hal.h"
+#include "drivers.h"
 
 #define MCK_FB_INTEG    256
 #define MCK_FB_DIV      4
@@ -82,4 +83,50 @@ void stopMCKCapture()
 int mckValueKHz()
 {
     return sofFeedback * MCK_FB_DIV / MCK_FB_INTEG;
+}
+
+void switchDACSource(DACSource source)
+{
+    if(source != DAC_SOURCE_SPDIF)
+    {
+        // Disable MCK from S/PDIF receiver
+        cs8416ToggleMCK(&spdif, false);
+        // Switch I2S mux to MCU's I2S
+        palSetPad(GPIOC, GPIOC_I2S_SEL);
+        // Enable MCK from external XCO
+        palSetPad(GPIOC, GPIOC_MCK_EN);
+    }
+    else
+    {
+        // Disable MCK from external XCO
+        palClearPad(GPIOC, GPIOC_MCK_EN);
+        // Switch I2S mux to S/PDIF receiver I2S
+        palClearPad(GPIOC, GPIOC_I2S_SEL);
+        // Enable MCK from S/PDIF receiver
+        cs8416ToggleMCK(&spdif, true);
+    }
+}
+
+void switchAudioSource(AudioSource source)
+{
+    switch (source)
+    {
+    case AUDIO_SOURCE_NONE:
+        switchDACSource(DAC_SOURCE_NONE);
+        break;
+
+    case AUDIO_SOURCE_OPTICAL:
+        switchDACSource(DAC_SOURCE_SPDIF);
+        cs8416SelectInput(&spdif, SPDIF_OPTICAL_INPUT);
+        break;
+
+    case AUDIO_SOURCE_COAXIAL:
+        switchDACSource(DAC_SOURCE_SPDIF);
+        cs8416SelectInput(&spdif, SPDIF_COAXIAL_INPUT);
+        break;
+
+    case AUDIO_SOURCE_USB:
+        switchDACSource(DAC_SOURCE_MCU);
+        break;
+    }
 }

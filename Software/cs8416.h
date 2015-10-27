@@ -11,6 +11,7 @@
 #define CS8416_REG_CONTROL2         0x02
 #define CS8416_REG_CONTROL3         0x03
 #define CS8416_REG_CONTROL4         0x04
+#define CS8416_REG_AUDIO_FORMAT     0x05
 
 #define CS8416_CONTROL0_TRUNC       (1 << 2)
 #define CS8416_CONTROL0_PDUR        (1 << 3)
@@ -35,11 +36,22 @@
 #define CS8416_CONTROL4_RXD         (1 << 6)
 #define CS8416_CONTROL4_RUN         (1 << 7)
 
+#define CS8416_AFMT_SOLRPOL         (1 << 0)
+#define CS8416_AFMT_SOSPOL          (1 << 1)
+#define CS8416_AFMT_SODEL           (1 << 2)
+#define CS8416_AFMT_SOJUST          (1 << 3)
+#define CS8416_AFMT_SORES0          (1 << 4)
+#define CS8416_AFMT_SORES1          (1 << 5)
+#define CS8416_AFMT_SOSF            (1 << 6)
+#define CS8416_AFMT_SOMS            (1 << 7)
+
 typedef struct
 {
     I2CDriver *i2cp;
     uint8_t address;
     systime_t timeout;
+    //! Contents of reg 0x05 - output format select
+    uint8_t audiofmt;
 } CS8416Config;
 
 typedef struct
@@ -58,5 +70,8 @@ msg_t cs8416PowerUp(CS8416Driver *csp);
 msg_t cs8416PowerDown(CS8416Driver *csp);
 
 msg_t cs8416SelectInput(CS8416Driver *csp, uint8_t input);
+
+//! Enable / disable MCK output
+msg_t cs8416ToggleMCK(CS8416Driver *csp, bool enabled);
 
 #endif // CS8416_H
