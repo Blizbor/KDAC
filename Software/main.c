@@ -22,6 +22,15 @@ static const CS8416Config spdifcfg =
     CS8416_AFMT_SOMS | CS8416_AFMT_SODEL
 };
 
+static const PCM1792AConfig daccfg =
+{
+    &I2CD1,
+    PCM1792A_I2C_ADDRESS(0x0),
+    100,
+    // Volume control, 24 bit I2S,
+    PCM1792_REG12_ATLD | PCM1792_REG12_FMT(0x5)
+};
+
 int main(void)
 {
     halInit();
@@ -41,6 +50,9 @@ int main(void)
     cs8416Start(&spdif, &spdifcfg);
 
     cs8416PowerUp(&spdif);
+
+    pcm1792aInit(&dac);
+    pcm1792aStart(&dac, &daccfg);
 
     switchAudioSource(AUDIO_SOURCE_OPTICAL);
 

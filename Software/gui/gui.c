@@ -28,6 +28,7 @@ void mckViewUpdate(struct SpinBox *view)
 
 void volumeUpdate(struct SpinBox *view, int value)
 {
+    setDACVolume(value);
 }
 
 static THD_WORKING_AREA(waGui, 256);
@@ -46,7 +47,9 @@ static THD_FUNCTION(guiThread, arg)
 
     spinBoxInit(&volumeEdit, mainFont, numberFont, true, NULL, volumeUpdate);
     spinBoxSetTitle(&volumeEdit, "Volume");
-    spinBoxSetRange(&volumeEdit, 0, 100, 1);
+    spinBoxSetRange(&volumeEdit, 0, 255, 1);
+    spinBoxSetValue(&volumeEdit, 224);
+    volumeUpdate(&volumeEdit, 224);
 
     managerPushWidget(&guiManager, (struct Widget*)&mainMenu);
 

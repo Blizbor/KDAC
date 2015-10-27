@@ -1,6 +1,8 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include "hal.h"
+
 #define SPDIF_COAXIAL_INPUT     0
 #define SPDIF_OPTICAL_INPUT     1
 
@@ -13,6 +15,8 @@ void stopMCKCapture();
 int mckValueKHz();
 
 void switchDACSource(DACSource source);
+void setDACVolume(uint8_t volume);
+
 void switchAudioSource(AudioSource source);
 
 #endif

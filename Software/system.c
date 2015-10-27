@@ -87,7 +87,9 @@ int mckValueKHz()
 
 void switchDACSource(DACSource source)
 {
-    if(source != DAC_SOURCE_SPDIF)
+    pcm1792aPowerDown(&dac);
+
+    if (source != DAC_SOURCE_SPDIF)
     {
         // Disable MCK from S/PDIF receiver
         cs8416ToggleMCK(&spdif, false);
@@ -105,6 +107,11 @@ void switchDACSource(DACSource source)
         // Enable MCK from S/PDIF receiver
         cs8416ToggleMCK(&spdif, true);
     }
+
+    osalThreadSleepMilliseconds(10);
+
+    if (source != DAC_SOURCE_NONE)
+        pcm1792aPowerUp(&dac);
 }
 
 void switchAudioSource(AudioSource source)
@@ -116,17 +123,23 @@ void switchAudioSource(AudioSource source)
         break;
 
     case AUDIO_SOURCE_OPTICAL:
-        switchDACSource(DAC_SOURCE_SPDIF);
         cs8416SelectInput(&spdif, SPDIF_OPTICAL_INPUT);
+        switchDACSource(DAC_SOURCE_SPDIF);
         break;
 
     case AUDIO_SOURCE_COAXIAL:
-        switchDACSource(DAC_SOURCE_SPDIF);
         cs8416SelectInput(&spdif, SPDIF_COAXIAL_INPUT);
+        switchDACSource(DAC_SOURCE_SPDIF);
         break;
 
     case AUDIO_SOURCE_USB:
         switchDACSource(DAC_SOURCE_MCU);
         break;
     }
+}
+
+void setDACVolume(uint8_t volume)
+{
+    pcm1792aSetAttenuation(&dac, volume, false);
+    pcm1792aSetAttenuation(&dac, volume, true);
 }
