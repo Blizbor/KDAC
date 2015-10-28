@@ -6,6 +6,9 @@
 
 #include "drivers.h"
 
+CS8416Driver spdif;
+PCM1792ADriver dac;
+
 static const I2CConfig i2cfg =
 {
     OPMODE_I2C,
@@ -31,6 +34,12 @@ static const PCM1792AConfig daccfg =
     PCM1792_REG12_ATLD | PCM1792_REG12_FMT(0x5)
 };
 
+static const SystemConfig syscfg =
+{
+    &spdif,
+    &dac
+};
+
 int main(void)
 {
     halInit();
@@ -54,7 +63,8 @@ int main(void)
     pcm1792aInit(&dac);
     pcm1792aStart(&dac, &daccfg);
 
-    switchAudioSource(AUDIO_SOURCE_OPTICAL);
+    systemInit(&system);
+    systemStart(&system, &syscfg);
 
     startGUI();
 
@@ -64,12 +74,12 @@ int main(void)
     {
         if (SDU1.config->usbp->state == USB_ACTIVE && capture == false)
         {
-            startMCKCapture();
+            systemStartMCKCapture(&system);
             capture = true;
         }
         else if (SDU1.config->usbp->state != USB_ACTIVE && capture == true)
         {
-            stopMCKCapture();
+            systemStopMCKCapture(&system);
             capture = false;
         }
         chThdSleepMilliseconds(1000);

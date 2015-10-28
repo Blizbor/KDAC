@@ -27,6 +27,7 @@ SET(PROJECT_SOURCES
     gui/menu.c
     gui/label.c
     gui/spinbox.c
+    gui/combobox.c
     gui/gui.c
 )
 

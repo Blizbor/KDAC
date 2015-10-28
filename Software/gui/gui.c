@@ -5,30 +5,51 @@
 #include "gui/label.h"
 #include "gui/spinbox.h"
 #include "gui/manager.h"
+#include "gui/combobox.h"
 
 #include "system.h"
+#include "drivers.h"
 
 static struct Menu mainMenu;
 static struct Manager guiManager;
 static struct SpinBox mckView;
 static struct SpinBox volumeEdit;
+static struct ComboBox inputEdit;
 static font_t mainFont;
 static font_t numberFont;
 
-const struct MenuItem mainMenuItems[10] =
+const struct MenuItem mainMenuItems[3] =
 {
-    {"MCK Frequency", (struct Widget*)&mckView}, {"Volume", (struct Widget*)&volumeEdit}, {"Item 3", NULL}, {"Item 4", NULL}, {"Item 5", NULL},
-    {"Item 6", NULL}, {"Item 7", NULL}, {"Item 8", NULL}, {"Item 9", NULL}, {"Item 10", NULL}
+    {"MCK Frequency", (struct Widget*)&mckView}, {"Volume", (struct Widget*)&volumeEdit}, {"Input", (struct Widget*)&inputEdit}
+};
+const struct ComboBoxItem inputEditValues[4] =
+{
+    {"None", AUDIO_SOURCE_NONE}, {"USB", AUDIO_SOURCE_USB}, {"S/PDIF Coaxial", AUDIO_SOURCE_COAXIAL}, {"S/PDIF Optical", AUDIO_SOURCE_OPTICAL}
 };
 
 void mckViewUpdate(struct SpinBox *view)
 {
-    spinBoxSetValue(view, mckValueKHz());
+    spinBoxSetValue(view, systemMCKValueKHz(&system));
 }
 
-void volumeUpdate(struct SpinBox *view, int value)
+void volumeSet(struct SpinBox *view, int value)
 {
-    setDACVolume(value);
+    systemSetVolume(&system, value);
+}
+
+void volumeUpdate(struct SpinBox *view)
+{
+    spinBoxSetValue(view, system.volume);
+}
+
+void inputSet(struct ComboBox *view, int value)
+{
+    systemSwitchAudioSource(&system, (AudioSource)value);
+}
+
+void inputUpdate(struct ComboBox *view)
+{
+    comboBoxSelect(view, (int)system.audio_source);
 }
 
 static THD_WORKING_AREA(waGui, 256);
@@ -40,16 +61,16 @@ static THD_FUNCTION(guiThread, arg)
     managerInit(&guiManager, TIM4);
     managerStart(&guiManager);
 
-    menuInit(&mainMenu, mainMenuItems, 10, mainFont);
+    menuInit(&mainMenu, mainMenuItems, 3, mainFont);
 
     spinBoxInit(&mckView, mainFont, numberFont, false, mckViewUpdate, NULL);
     spinBoxSetTitle(&mckView, "MCK Frequency");
 
-    spinBoxInit(&volumeEdit, mainFont, numberFont, true, NULL, volumeUpdate);
+    spinBoxInit(&volumeEdit, mainFont, numberFont, true, volumeUpdate, volumeSet);
     spinBoxSetTitle(&volumeEdit, "Volume");
     spinBoxSetRange(&volumeEdit, 0, 255, 1);
-    spinBoxSetValue(&volumeEdit, 224);
-    volumeUpdate(&volumeEdit, 224);
+
+    comboBoxInit(&inputEdit, inputEditValues, 4, mainFont, inputUpdate, inputSet);
 
     managerPushWidget(&guiManager, (struct Widget*)&mainMenu);
 

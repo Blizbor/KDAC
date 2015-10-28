@@ -73,12 +73,15 @@ void spinBoxSetTitle(struct SpinBox *self, const char *text)
 
 void spinBoxSetValue(struct SpinBox *self, int value)
 {
-    self->value = value > self->max ? self->max : (value < self->min ? self->min : value);
-    char str[LABEL_MAX_CHARS];
-    chsnprintf(str, LABEL_MAX_CHARS, "%d", self->value);
-    labelSetText(&self->valueLabel, str);
-    int w = gdispGetStringWidth(labelText(&self->valueLabel), labelFont(&self->valueLabel));
-    labelSetPosition(&self->valueLabel, (128 - w) / 2, 27);
+    if (self->value != value)
+    {
+        self->value = value > self->max ? self->max : (value < self->min ? self->min : value);
+        char str[LABEL_MAX_CHARS];
+        chsnprintf(str, LABEL_MAX_CHARS, "%d", self->value);
+        labelSetText(&self->valueLabel, str);
+        int w = gdispGetStringWidth(labelText(&self->valueLabel), labelFont(&self->valueLabel));
+        labelSetPosition(&self->valueLabel, (128 - w) / 2, 27);
+    }
 }
 
 void spinBoxSetRange(struct SpinBox *self, int min, int max, int step)

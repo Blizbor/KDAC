@@ -57,7 +57,7 @@
 //#define GDISP_NEED_TIMERFLUSH                        FALSE
 //#define GDISP_NEED_VALIDATION                        TRUE
 //#define GDISP_NEED_CLIP                              TRUE
-//#define GDISP_NEED_CIRCLE                            FALSE
+#define GDISP_NEED_CIRCLE                            TRUE
 //#define GDISP_NEED_ELLIPSE                           FALSE
 //#define GDISP_NEED_ARC                               FALSE
 //#define GDISP_NEED_ARCSECTORS                        FALSE
@@ -74,7 +74,7 @@
 //    #define GDISP_NEED_TEXT_KERNING                  FALSE
 //    #define GDISP_INCLUDE_FONT_UI1                   FALSE
 //    #define GDISP_INCLUDE_FONT_UI2                   FALSE		// The smallest preferred font.
-    #define GDISP_INCLUDE_FONT_LARGENUMBERS          TRUE
+#define GDISP_INCLUDE_FONT_LARGENUMBERS          TRUE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS10          FALSE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS12          FALSE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS16          FALSE
@@ -83,15 +83,15 @@
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS32          FALSE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANSBOLD12      FALSE
 //    #define GDISP_INCLUDE_FONT_FIXED_10X20           FALSE
-    #define GDISP_INCLUDE_FONT_FIXED_7X14            TRUE
-    #define GDISP_INCLUDE_FONT_FIXED_5X8             TRUE
+#define GDISP_INCLUDE_FONT_FIXED_7X14            TRUE
+#define GDISP_INCLUDE_FONT_FIXED_5X8             TRUE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS12_AA       FALSE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS16_AA       FALSE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS20_AA       FALSE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS24_AA       FALSE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS32_AA       FALSE
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANSBOLD12_AA   FALSE
-    #define GDISP_INCLUDE_USER_FONTS                 TRUE
+#define GDISP_INCLUDE_USER_FONTS                 TRUE
 
 //#define GDISP_NEED_IMAGE                             FALSE
 //    #define GDISP_NEED_IMAGE_NATIVE                  FALSE

@@ -6,7 +6,7 @@
 
 struct MenuItem
 {
-    char *title;
+    const char *title;
     struct Widget *widget;
 };
 

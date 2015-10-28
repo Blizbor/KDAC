@@ -5,7 +5,7 @@
 #define MCK_FB_INTEG    256
 #define MCK_FB_DIV      4
 
-static volatile uint32_t sofFeedback = 0;
+static SystemState *fbSysp = 0;
 static volatile uint16_t sofLastCounter = 0;
 static volatile uint32_t sofDelta = 0;
 static volatile bool sofFirst = true;
@@ -31,7 +31,7 @@ OSAL_IRQ_HANDLER(STM32_TIM11_HANDLER)
 
             if (sofDeltaCount == MCK_FB_INTEG - 1)
             {
-                sofFeedback = sofDelta;
+                fbSysp->sof_feedback = sofDelta;
                 sofDelta = 0;
                 sofDeltaCount = 0;
             }
@@ -48,7 +48,23 @@ OSAL_IRQ_HANDLER(STM32_TIM11_HANDLER)
     OSAL_IRQ_EPILOGUE();
 }
 
-void startMCKCapture()
+void systemInit(SystemState *sysp)
+{
+    sysp->audio_source = AUDIO_SOURCE_USB + 1;
+    sysp->config = 0;
+    sysp->dac_source = DAC_SOURCE_MCU + 1;
+    sysp->sof_feedback = 0;
+    sysp->volume = 0;
+}
+
+void systemStart(SystemState *sysp, const SystemConfig *cfg)
+{
+    sysp->config = cfg;
+    systemSwitchAudioSource(sysp, AUDIO_SOURCE_NONE);
+    systemSetVolume(sysp, DEFAULT_VOLUME);
+}
+
+void systemStartMCKCapture(SystemState *sysp)
 {
     rccEnableTIM1(FALSE);
     rccEnableTIM2(FALSE);
@@ -68,31 +84,38 @@ void startMCKCapture()
     TIM1->SMCR = TIM_SMCR_ECE | TIM_SMCR_ETPS_1 | TIM_SMCR_TS_0 | TIM_SMCR_SMS_2 | TIM_SMCR_SMS_1;
     TIM1->DIER = TIM_DIER_TIE;
     chSysUnlock();
+
+    fbSysp = sysp;
+    sysp->sof_feedback = 0;
 }
 
-void stopMCKCapture()
+void systemStopMCKCapture(SystemState *sysp)
 {
     chSysLock();
     nvicDisableVector(STM32_TIM11_NUMBER);
     TIM1->CR1 = 0;
     TIM2->CR1 = 0;
     chSysUnlock();
-    sofFeedback = 0;
+
+    sysp->sof_feedback = 0;
 }
 
-int mckValueKHz()
+int systemMCKValueKHz(SystemState *sysp)
 {
-    return sofFeedback * MCK_FB_DIV / MCK_FB_INTEG;
+    return sysp->sof_feedback * MCK_FB_DIV / MCK_FB_INTEG;
 }
 
-void switchDACSource(DACSource source)
+void systemSwitchDACSource(SystemState *sysp, DACSource source)
 {
-    pcm1792aPowerDown(&dac);
+    if (sysp->dac_source == source)
+        return;
+
+    pcm1792aPowerDown(sysp->config->dacp);
 
     if (source != DAC_SOURCE_SPDIF)
     {
         // Disable MCK from S/PDIF receiver
-        cs8416ToggleMCK(&spdif, false);
+        cs8416ToggleMCK(sysp->config->spdifp, false);
         // Switch I2S mux to MCU's I2S
         palSetPad(GPIOC, GPIOC_I2S_SEL);
         // Enable MCK from external XCO
@@ -105,41 +128,63 @@ void switchDACSource(DACSource source)
         // Switch I2S mux to S/PDIF receiver I2S
         palClearPad(GPIOC, GPIOC_I2S_SEL);
         // Enable MCK from S/PDIF receiver
-        cs8416ToggleMCK(&spdif, true);
+        cs8416ToggleMCK(sysp->config->spdifp, true);
     }
 
-    osalThreadSleepMilliseconds(10);
+    osalThreadSleepMilliseconds(1000);
 
     if (source != DAC_SOURCE_NONE)
-        pcm1792aPowerUp(&dac);
+    {
+        // status != 0 => PLL isn't locked yet
+        // FIXME: GUI will freeze on that
+        msg_t status;
+        do
+        {
+            osalThreadSleepMilliseconds(100);
+            status = pcm1792aPowerUp(sysp->config->dacp);
+        }
+        while (status);
+    }
+
+    sysp->dac_source = source;
 }
 
-void switchAudioSource(AudioSource source)
+void systemSwitchAudioSource(SystemState *sysp, AudioSource source)
 {
+    if (sysp->audio_source == source)
+        return;
+
     switch (source)
     {
     case AUDIO_SOURCE_NONE:
-        switchDACSource(DAC_SOURCE_NONE);
+        systemSwitchDACSource(sysp, DAC_SOURCE_NONE);
         break;
 
     case AUDIO_SOURCE_OPTICAL:
-        cs8416SelectInput(&spdif, SPDIF_OPTICAL_INPUT);
-        switchDACSource(DAC_SOURCE_SPDIF);
+        cs8416SelectInput(sysp->config->spdifp, SPDIF_OPTICAL_INPUT);
+        systemSwitchDACSource(sysp, DAC_SOURCE_SPDIF);
         break;
 
     case AUDIO_SOURCE_COAXIAL:
-        cs8416SelectInput(&spdif, SPDIF_COAXIAL_INPUT);
-        switchDACSource(DAC_SOURCE_SPDIF);
+        cs8416SelectInput(sysp->config->spdifp, SPDIF_COAXIAL_INPUT);
+        systemSwitchDACSource(sysp, DAC_SOURCE_SPDIF);
         break;
 
     case AUDIO_SOURCE_USB:
-        switchDACSource(DAC_SOURCE_MCU);
+        systemSwitchDACSource(sysp, DAC_SOURCE_MCU);
         break;
     }
+
+    sysp->audio_source = source;
 }
 
-void setDACVolume(uint8_t volume)
+void systemSetVolume(SystemState *sysp, uint8_t volume)
 {
-    pcm1792aSetAttenuation(&dac, volume, false);
-    pcm1792aSetAttenuation(&dac, volume, true);
+    if (volume == sysp->volume)
+        return;
+
+    pcm1792aSetAttenuation(sysp->config->dacp, volume, false);
+    pcm1792aSetAttenuation(sysp->config->dacp, volume, true);
+
+    sysp->volume = volume;
 }
