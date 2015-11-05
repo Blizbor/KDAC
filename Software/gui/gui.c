@@ -9,18 +9,22 @@
 
 #include "system.h"
 #include "drivers.h"
+#include "usb_audio.h"
 
 static struct Menu mainMenu;
 static struct Manager guiManager;
 static struct SpinBox mckView;
+static struct SpinBox uacURView;
+static struct SpinBox uacORView;
 static struct SpinBox volumeEdit;
 static struct ComboBox inputEdit;
 static font_t mainFont;
 static font_t numberFont;
 
-const struct MenuItem mainMenuItems[3] =
+const struct MenuItem mainMenuItems[5] =
 {
-    {"MCK Frequency", (struct Widget*)&mckView}, {"Volume", (struct Widget*)&volumeEdit}, {"Input", (struct Widget*)&inputEdit}
+    {"MCK Frequency", (struct Widget*)&mckView}, {"Volume", (struct Widget*)&volumeEdit}, {"Input", (struct Widget*)&inputEdit},
+    {"UAC Underruns", (struct Widget*)&uacURView}, {"UAC Overruns", (struct Widget*)&uacORView}
 };
 const struct ComboBoxItem inputEditValues[4] =
 {
@@ -32,14 +36,26 @@ void mckViewUpdate(struct SpinBox *view)
     spinBoxSetValue(view, systemMCKValueKHz(&system));
 }
 
+extern USBAudioDriver audio;
+
+void uacURViewUpdate(struct SpinBox *view)
+{
+    spinBoxSetValue(view, audio.underrun_count);
+}
+
+void uacORViewUpdate(struct SpinBox *view)
+{
+    spinBoxSetValue(view, audio.overrun_count);
+}
+
 void volumeSet(struct SpinBox *view, int value)
 {
-    systemSetVolume(&system, value);
+    systemSetVolume(&system, value, value);
 }
 
 void volumeUpdate(struct SpinBox *view)
 {
-    spinBoxSetValue(view, system.volume);
+    spinBoxSetValue(view, system.volume[0]);
 }
 
 void inputSet(struct ComboBox *view, int value)
@@ -52,7 +68,7 @@ void inputUpdate(struct ComboBox *view)
     comboBoxSelect(view, (int)system.audio_source);
 }
 
-static THD_WORKING_AREA(waGui, 256);
+static THD_WORKING_AREA(waGui, 512);
 static THD_FUNCTION(guiThread, arg)
 {
     rccEnableTIM4(FALSE);
@@ -61,7 +77,7 @@ static THD_FUNCTION(guiThread, arg)
     managerInit(&guiManager, TIM4);
     managerStart(&guiManager);
 
-    menuInit(&mainMenu, mainMenuItems, 3, mainFont);
+    menuInit(&mainMenu, mainMenuItems, 5, mainFont);
 
     spinBoxInit(&mckView, mainFont, numberFont, false, mckViewUpdate, NULL);
     spinBoxSetTitle(&mckView, "MCK Frequency");
@@ -71,6 +87,12 @@ static THD_FUNCTION(guiThread, arg)
     spinBoxSetRange(&volumeEdit, 0, 255, 1);
 
     comboBoxInit(&inputEdit, inputEditValues, 4, mainFont, inputUpdate, inputSet);
+
+    spinBoxInit(&uacURView, mainFont, numberFont, false, uacURViewUpdate, NULL);
+    spinBoxSetTitle(&uacURView, "UAC Underruns");
+
+    spinBoxInit(&uacORView, mainFont, numberFont, false, uacORViewUpdate, NULL);
+    spinBoxSetTitle(&uacORView, "UAC Overruns");
 
     managerPushWidget(&guiManager, (struct Widget*)&mainMenu);
 
@@ -87,5 +109,5 @@ void startGUI()
     mainFont = gdispOpenFont("terminus_12");
     numberFont = gdispOpenFont("LargeNumbers");
 
-    chThdCreateStatic(waGui, sizeof(waGui), NORMALPRIO, guiThread, NULL);
+    chThdCreateStatic(waGui, sizeof(waGui), LOWPRIO, guiThread, NULL);
 }

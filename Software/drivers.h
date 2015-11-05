@@ -2,9 +2,9 @@
 #define DRIVERS_H
 
 #include "system.h"
+#include "usb_audio.h"
 
 SystemState system;
-
-SerialUSBDriver SDU1;
+USBAudioDriver audio;
 
 #endif

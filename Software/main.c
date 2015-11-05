@@ -1,5 +1,5 @@
 #include "hal.h"
-#include "usbcfg.h"
+#include "usb_audio.h"
 
 #include "gui/gui.h"
 #include "system.h"
@@ -19,7 +19,7 @@ static const I2CConfig i2cfg =
 static const CS8416Config spdifcfg =
 {
     &I2CD1,
-    CS8416_I2C_ADDRESS(0x4),
+    CS8416_I2C_ADDRESS(0x0),
     100,
     // Master mode, 24 bit I2S, 64 x Fs
     CS8416_AFMT_SOMS | CS8416_AFMT_SODEL
@@ -45,15 +45,7 @@ int main(void)
     halInit();
     chSysInit();
 
-    sduObjectInit(&SDU1);
-    sduStart(&SDU1, &serusbcfg);
-
     i2cStart(&I2CD1, &i2cfg);
-
-    usbDisconnectBus(serusbcfg.usbp);
-    chThdSleepMilliseconds(1500);
-    usbStart(serusbcfg.usbp, &usbcfg);
-    usbConnectBus(serusbcfg.usbp);
 
     cs8416Init(&spdif);
     cs8416Start(&spdif, &spdifcfg);
@@ -66,23 +58,10 @@ int main(void)
     systemInit(&system);
     systemStart(&system, &syscfg);
 
+    systemSwitchAudioSource(&system, AUDIO_SOURCE_USB);
+    //systemSwitchDACSource(&system, DAC_SOURCE_SPDIF);
+
     startGUI();
 
-    bool capture = false;
-
-    for (;;)
-    {
-        if (SDU1.config->usbp->state == USB_ACTIVE && capture == false)
-        {
-            systemStartMCKCapture(&system);
-            capture = true;
-        }
-        else if (SDU1.config->usbp->state != USB_ACTIVE && capture == true)
-        {
-            systemStopMCKCapture(&system);
-            capture = false;
-        }
-        chThdSleepMilliseconds(1000);
-    }
-    for (;;);
+    usbAudio();
 }

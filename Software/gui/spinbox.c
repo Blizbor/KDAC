@@ -57,6 +57,7 @@ void spinBoxInit(struct SpinBox *self, font_t titleFont, font_t valueFont, bool 
     self->vmt = &spinboxVMT;
     self->update = update;
     self->callback = callback;
+    self->value = -1;
 
     labelInit(&self->titleLabel, titleFont);
     labelInit(&self->valueLabel, valueFont);

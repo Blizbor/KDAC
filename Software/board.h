@@ -499,7 +499,7 @@
                                      PIN_MODE_INPUT(GPIOC_PIN4) |           \
                                      PIN_MODE_INPUT(GPIOC_PIN5) |           \
                                      PIN_MODE_INPUT(GPIOC_PIN6) |           \
-                                     PIN_MODE_INPUT(GPIOC_PIN7) |           \
+                                     PIN_MODE_ALTERNATE(GPIOC_PIN7) |           \
                                      PIN_MODE_OUTPUT(GPIOC_MCK_EN) |        \
                                      PIN_MODE_ALTERNATE(GPIOC_I2S_MCK) |    \
                                      PIN_MODE_ALTERNATE(GPIOC_I2S_BCK) |    \
@@ -531,7 +531,7 @@
                                      PIN_OSPEED_2M(GPIOC_PIN4) |            \
                                      PIN_OSPEED_2M(GPIOC_PIN5) |            \
                                      PIN_OSPEED_2M(GPIOC_PIN6) |            \
-                                     PIN_OSPEED_2M(GPIOC_PIN7) |            \
+                                     PIN_OSPEED_100M(GPIOC_PIN7) |            \
                                      PIN_OSPEED_100M(GPIOC_MCK_EN) |        \
                                      PIN_OSPEED_100M(GPIOC_I2S_MCK) |       \
                                      PIN_OSPEED_100M(GPIOC_I2S_BCK) |       \
@@ -547,7 +547,7 @@
                                      PIN_PUPDR_PULLUP(GPIOC_PIN4) |         \
                                      PIN_PUPDR_PULLUP(GPIOC_PIN5) |         \
                                      PIN_PUPDR_PULLUP(GPIOC_PIN6) |         \
-                                     PIN_PUPDR_PULLUP(GPIOC_PIN7) |         \
+                                     PIN_PUPDR_FLOATING(GPIOC_PIN7) |         \
                                      PIN_PUPDR_FLOATING(GPIOC_MCK_EN) |     \
                                      PIN_PUPDR_FLOATING(GPIOC_I2S_MCK) |    \
                                      PIN_PUPDR_PULLUP(GPIOC_I2S_BCK) |      \
@@ -579,7 +579,7 @@
                                      PIN_AFIO_AF(GPIOC_PIN4, 0) |           \
                                      PIN_AFIO_AF(GPIOC_PIN5, 0) |           \
                                      PIN_AFIO_AF(GPIOC_PIN6, 0) |           \
-                                     PIN_AFIO_AF(GPIOC_PIN7, 0))
+                                     PIN_AFIO_AF(GPIOC_PIN7, 6))
 #define VAL_GPIOC_AFRH              (PIN_AFIO_AF(GPIOC_MCK_EN, 0) |         \
                                      PIN_AFIO_AF(GPIOC_I2S_MCK, 5) |        \
                                      PIN_AFIO_AF(GPIOC_I2S_BCK, 6) |        \

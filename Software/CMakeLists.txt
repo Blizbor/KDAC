@@ -15,7 +15,7 @@ INCLUDE_DIRECTORIES(
 SET(PROJECT_SOURCES
     main.c
     board.c
-    usbcfg.c
+    usb_audio.c
     
     system.c
 

@@ -25,7 +25,8 @@ typedef struct
     DACSource dac_source;
     AudioSource audio_source;
     uint32_t sof_feedback;
-    uint8_t volume;
+    bool sof_valid;
+    uint8_t volume[2];
 } SystemState;
 
 void systemInit(SystemState *sysp);
@@ -34,11 +35,12 @@ void systemStart(SystemState *sysp, const SystemConfig *cfg);
 void systemStartMCKCapture(SystemState *sysp);
 void systemStopMCKCapture(SystemState *sysp);
 
+void systemMCKValueUSBFeedback(SystemState *sysp, uint8_t oversampleShift, uint8_t *feedback);
 int systemMCKValueKHz(SystemState *sysp);
 
 void systemSwitchDACSource(SystemState *sysp, DACSource source);
 void systemSwitchAudioSource(SystemState *sysp, AudioSource source);
 
-void systemSetVolume(SystemState *sysp, uint8_t volume);
+void systemSetVolume(SystemState *sysp, uint8_t volumeL, uint8_t volumeR);
 
 #endif

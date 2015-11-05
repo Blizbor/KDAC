@@ -57,7 +57,7 @@
 #define STM32_MCO1PRE                       STM32_MCO1PRE_DIV1
 #define STM32_MCO2SEL                       STM32_MCO2SEL_SYSCLK
 #define STM32_MCO2PRE                       STM32_MCO2PRE_DIV5
-#define STM32_I2SSRC                        STM32_I2SSRC_PLLI2S
+#define STM32_I2SSRC                        STM32_I2SSRC_CKIN
 #define STM32_PLLI2SN_VALUE                 295
 #define STM32_PLLI2SR_VALUE                 3
 #define STM32_PVD_ENABLE                    FALSE
@@ -331,10 +331,10 @@
 #define STM32_USB_USE_OTG1                  FALSE
 #define STM32_USB_USE_OTG2                  TRUE
 #define STM32_USB_OTG1_IRQ_PRIORITY         14
-#define STM32_USB_OTG2_IRQ_PRIORITY         14
+#define STM32_USB_OTG2_IRQ_PRIORITY         4
 #define STM32_USB_OTG1_RX_FIFO_SIZE         512
 #define STM32_USB_OTG2_RX_FIFO_SIZE         1024
-#define STM32_USB_OTG_THREAD_PRIO           LOWPRIO
+#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO
 #define STM32_USB_OTG_THREAD_STACK_SIZE     128
 #define STM32_USB_OTGFIFO_FILL_BASEPRI      0
 #define STM32_USE_USB_OTG2_HS               FALSE

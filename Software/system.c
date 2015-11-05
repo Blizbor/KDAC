@@ -2,8 +2,10 @@
 #include "hal.h"
 #include "drivers.h"
 
-#define MCK_FB_INTEG    256
+#define MCK_FB_INTEG    32
 #define MCK_FB_DIV      4
+
+#define CAPTURE_TUNE    2
 
 static SystemState *fbSysp = 0;
 static volatile uint16_t sofLastCounter = 0;
@@ -31,7 +33,8 @@ OSAL_IRQ_HANDLER(STM32_TIM11_HANDLER)
 
             if (sofDeltaCount == MCK_FB_INTEG - 1)
             {
-                fbSysp->sof_feedback = sofDelta;
+                fbSysp->sof_feedback = sofDelta + CAPTURE_TUNE;
+                fbSysp->sof_valid = true;
                 sofDelta = 0;
                 sofDeltaCount = 0;
             }
@@ -54,14 +57,16 @@ void systemInit(SystemState *sysp)
     sysp->config = 0;
     sysp->dac_source = DAC_SOURCE_MCU + 1;
     sysp->sof_feedback = 0;
-    sysp->volume = 0;
+    sysp->sof_valid = false;
+    sysp->volume[0] = 0;
+    sysp->volume[1] = 0;
 }
 
 void systemStart(SystemState *sysp, const SystemConfig *cfg)
 {
     sysp->config = cfg;
     systemSwitchAudioSource(sysp, AUDIO_SOURCE_NONE);
-    systemSetVolume(sysp, DEFAULT_VOLUME);
+    systemSetVolume(sysp, DEFAULT_VOLUME, DEFAULT_VOLUME);
 }
 
 void systemStartMCKCapture(SystemState *sysp)
@@ -87,6 +92,7 @@ void systemStartMCKCapture(SystemState *sysp)
 
     fbSysp = sysp;
     sysp->sof_feedback = 0;
+    sysp->sof_valid = false;
 }
 
 void systemStopMCKCapture(SystemState *sysp)
@@ -98,6 +104,20 @@ void systemStopMCKCapture(SystemState *sysp)
     chSysUnlock();
 
     sysp->sof_feedback = 0;
+    sysp->sof_valid = false;
+}
+
+
+void systemMCKValueUSBFeedback(SystemState *sysp, uint8_t oversampleShift, uint8_t *feedback)
+{
+    // Value in kHz
+    uint32_t f = sysp->sof_feedback * MCK_FB_DIV;
+
+    // Convert to 10.14 format (in Hertz)
+    uint32_t f1014 = ((f << (14 - oversampleShift)) / MCK_FB_INTEG) & 0xFFFFFFUL;
+    feedback[0] = f1014 & 0xFF;
+    feedback[1] = (f1014 >> 8) & 0xFF;
+    feedback[2] = (f1014 >> 16) & 0xFF;
 }
 
 int systemMCKValueKHz(SystemState *sysp)
@@ -178,13 +198,14 @@ void systemSwitchAudioSource(SystemState *sysp, AudioSource source)
     sysp->audio_source = source;
 }
 
-void systemSetVolume(SystemState *sysp, uint8_t volume)
+void systemSetVolume(SystemState *sysp, uint8_t volumeL, uint8_t volumeR)
 {
-    if (volume == sysp->volume)
+    if (volumeL == sysp->volume[0] && volumeR == sysp->volume[1])
         return;
 
-    pcm1792aSetAttenuation(sysp->config->dacp, volume, false);
-    pcm1792aSetAttenuation(sysp->config->dacp, volume, true);
+    pcm1792aSetAttenuation(sysp->config->dacp, volumeL, false);
+    pcm1792aSetAttenuation(sysp->config->dacp, volumeR, true);
 
-    sysp->volume = volume;
+    sysp->volume[0] = volumeL;
+    sysp->volume[1] = volumeR;
 }
